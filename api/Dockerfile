@@ -15,4 +15,6 @@ RUN python -c "import pathlib,sys; sys.exit(0 if pathlib.Path('app/artifacts/mod
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Shell form so ${PORT} (injected by Render/most PaaS) is expanded.
+# Falls back to 8000 locally (docker-compose maps 8000:8000).
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
