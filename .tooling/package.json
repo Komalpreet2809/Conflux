@@ -1,0 +1,9 @@
+{
+  "name": "gridlockr-tooling",
+  "private": true,
+  "type": "module",
+  "description": "Throwaway screenshot/verification tooling (not part of the app).",
+  "dependencies": {
+    "playwright": "^1.61.0"
+  }
+}

@@ -1,0 +1,13 @@
+# Render Blueprint for the Conflux API (FastAPI + ML, Docker).
+# Render -> New -> Blueprint -> pick this repo. Region set to Singapore (low
+# latency to India). Free plan sleeps after ~15 min idle (see DEPLOY.md to keep warm).
+services:
+  - type: web
+    name: conflux-api
+    runtime: docker
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    plan: free
+    region: singapore
+    healthCheckPath: /health
+    autoDeploy: true

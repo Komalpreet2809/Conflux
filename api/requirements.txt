@@ -1,0 +1,10 @@
+# Conflux ML/API backend dependencies
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.32,<1.0
+pydantic>=2.9,<3.0
+numpy>=2.1
+pandas>=2.2
+scikit-learn>=1.5
+scipy>=1.14
+networkx>=3.3
+joblib>=1.4

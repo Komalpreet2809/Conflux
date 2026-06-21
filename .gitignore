@@ -1,0 +1,33 @@
+# --- Python (api) ---
+api/.venv/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# --- Node / Next (web) ---
+web/node_modules/
+web/.next/
+web/out/
+web/build/
+web/.vercel/
+
+# --- Tooling ---
+.tooling/node_modules/
+
+# --- Env ---
+web/.env.local
+api/.env
+
+# --- Logs ---
+*.log
+
+# --- Generated submission artifacts ---
+*.zip
+dist/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# NOTE: api/app/artifacts/*.joblib and metrics.json ARE committed on purpose,
+# so the demo runs without a training step.
