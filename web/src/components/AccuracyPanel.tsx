@@ -82,7 +82,7 @@ export default function AccuracyPanel({ metrics, replay, theme = "dark" }: Props
 
       <div className="min-h-0 flex-1">
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 8, right: 10, bottom: 4, left: -20 }}>
+          <ScatterChart margin={{ top: 8, right: 12, bottom: 8, left: 0 }}>
             <CartesianGrid stroke={gridColor} strokeDasharray="3 4" />
             <XAxis
               type="number"

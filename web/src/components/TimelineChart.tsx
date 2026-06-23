@@ -50,7 +50,7 @@ export default function TimelineChart({
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
         data={data}
-        margin={{ top: 6, right: 8, left: -22, bottom: 0 }}
+        margin={{ top: 6, right: 10, left: 0, bottom: 0 }}
         onClick={(e) => {
           if (onScrub && e && typeof e.activeTooltipIndex === "number") {
             onScrub(e.activeTooltipIndex);

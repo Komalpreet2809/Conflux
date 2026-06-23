@@ -96,19 +96,19 @@ export default function RecommendationsPanel({ plan, layers, onToggleLayer }: Pr
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-3 flex items-center justify-between transition-colors duration-300">
-        <div className="flex gap-1.5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 transition-colors duration-300">
+        <div className="flex flex-wrap gap-1">
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-[12px] font-bold transition cursor-pointer ${
+              className={`flex items-center gap-1 rounded-xl px-2 py-1.5 text-[12px] font-bold transition cursor-pointer ${
                 tab === t.key
                   ? "bg-accent text-accent-foreground shadow-sm"
                   : "text-muted hover:text-foreground hover:bg-panel-2"
               }`}
             >
-              {t.icon}
+              <span className="shrink-0">{t.icon}</span>
               {t.label}
               <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold transition-colors ${
                 tab === t.key ? "bg-accent-foreground/20 text-accent-foreground" : "bg-panel-2 text-muted border border-edge"
@@ -118,22 +118,20 @@ export default function RecommendationsPanel({ plan, layers, onToggleLayer }: Pr
             </button>
           ))}
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex shrink-0 gap-1">
           <button
             onClick={() => onToggleLayer(layerKey)}
-            className="flex items-center gap-1.5 rounded-xl border border-edge bg-panel px-2.5 py-1.5 text-[11px] font-bold text-muted transition hover:text-foreground hover:bg-panel-2 cursor-pointer shadow-xs"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-edge bg-panel text-muted transition hover:text-foreground hover:bg-panel-2 cursor-pointer shadow-xs"
             title="Toggle map layer"
           >
-            {layerOn ? <Eye size={12} className="text-foreground" /> : <EyeOff size={12} />}
-            Map
+            {layerOn ? <Eye size={13} className="text-foreground" /> : <EyeOff size={13} />}
           </button>
           <button
             onClick={exportPlan}
-            className="flex items-center gap-1.5 rounded-xl border border-edge bg-panel px-2.5 py-1.5 text-[11px] font-bold text-muted transition hover:text-foreground hover:bg-panel-2 cursor-pointer shadow-xs"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-edge bg-panel text-muted transition hover:text-foreground hover:bg-panel-2 cursor-pointer shadow-xs"
             title="Export deployment plan"
           >
-            <Download size={12} />
-            Export
+            <Download size={13} />
           </button>
         </div>
       </div>
