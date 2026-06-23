@@ -63,6 +63,19 @@ interface Props {
 
 const BLR_CENTER: [number, number] = [12.9716, 77.5946];
 
+// Re-fit Leaflet whenever its container resizes (column drag, window resize,
+// mobile<->desktop) so tiles/markers never misalign.
+function MapResizeObserver() {
+  const map = useMap();
+  useEffect(() => {
+    const c = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(c);
+    return () => ro.disconnect();
+  }, [map]);
+  return null;
+}
+
 function FitToData({ forecast }: { forecast: Forecast | null }) {
   const map = useMap();
   useEffect(() => {
@@ -284,6 +297,7 @@ export default function MapView({
       />
 
       <FitToData forecast={forecast} />
+      <MapResizeObserver />
       <MapZoomListener setZoom={setZoom} />
 
       {/* Base road network */}

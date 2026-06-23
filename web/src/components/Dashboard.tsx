@@ -1,7 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Layers, Radio, TriangleAlert, Sun, Moon } from "lucide-react";
 
 import {
@@ -102,6 +109,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [booting, setBooting] = useState(true);
   const [bootMsg, setBootMsg] = useState("Booting command center…");
+  const [leftW, setLeftW] = useState(330);
+  const [rightW, setRightW] = useState(390);
   const [error, setError] = useState<string | null>(null);
   const [rightTab, setRightTab] = useState<"plan" | "accuracy">("plan");
   const [layers, setLayers] = useState<MapLayers>({
@@ -248,6 +257,58 @@ export default function Dashboard() {
   const toggleLayer = (key: keyof MapLayers) =>
     setLayers((l) => ({ ...l, [key]: !l[key] }));
 
+  // --- Resizable columns (desktop only) ---
+  useEffect(() => {
+    const l = Number(localStorage.getItem("conflux:leftW"));
+    const r = Number(localStorage.getItem("conflux:rightW"));
+    if (l >= 240 && l <= 520) setLeftW(l);
+    if (r >= 300 && r <= 560) setRightW(r);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("conflux:leftW", String(leftW));
+  }, [leftW]);
+  useEffect(() => {
+    localStorage.setItem("conflux:rightW", String(rightW));
+  }, [rightW]);
+
+  const startColDrag = (which: "left" | "right") => (e: ReactPointerEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startLeft = leftW;
+    const startRight = rightW;
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - startX;
+      if (which === "left") {
+        setLeftW(Math.min(520, Math.max(240, startLeft + dx)));
+      } else {
+        setRightW(Math.min(560, Math.max(300, startRight - dx)));
+      }
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "col-resize";
+  };
+
+  const ColHandle = ({ side }: { side: "left" | "right" }) => (
+    <div
+      onPointerDown={startColDrag(side)}
+      onDoubleClick={() => (side === "left" ? setLeftW(330) : setRightW(390))}
+      role="separator"
+      aria-orientation="vertical"
+      title="Drag to resize · double-click to reset"
+      className="group hidden cursor-col-resize select-none items-center justify-center lg:flex"
+    >
+      <div className="h-12 w-1 rounded-full bg-edge transition-colors group-hover:bg-accent" />
+    </div>
+  );
+
   const eventTypeLabel = useMemo(() => {
     if (!forecast) return "";
     return (
@@ -322,7 +383,10 @@ export default function Dashboard() {
       )}
 
       {/* Body */}
-      <div className="grid grid-cols-1 gap-4 p-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[290px_1fr_350px] xl:grid-cols-[330px_1fr_390px]">
+      <div
+        className="grid grid-cols-1 gap-4 p-4 lg:min-h-0 lg:flex-1 lg:gap-0 lg:[grid-template-columns:var(--lw)_14px_minmax(0,1fr)_14px_var(--rw)]"
+        style={{ "--lw": `${leftW}px`, "--rw": `${rightW}px` } as CSSProperties}
+      >
         {/* Left: scenario */}
         <aside className="panel p-4 lg:min-h-0 lg:overflow-hidden">
           <ScenarioPanel
@@ -338,6 +402,8 @@ export default function Dashboard() {
             onLoadReplay={loadReplay}
           />
         </aside>
+
+        <ColHandle side="left" />
 
         {/* Center: KPIs + map + slider + chart */}
         <main className="flex flex-col gap-4 lg:min-h-0 lg:min-w-0">
@@ -400,6 +466,8 @@ export default function Dashboard() {
             </div>
           )}
         </main>
+
+        <ColHandle side="right" />
 
         {/* Right: event summary + plan/accuracy */}
         <aside className="flex flex-col gap-4 lg:min-h-0">
