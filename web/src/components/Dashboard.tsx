@@ -22,6 +22,7 @@ import {
   getVenues,
   getWeatherOptions,
   simulate,
+  API_BASE,
 } from "@/lib/api";
 import { DOW_LABELS, RAIN_LABELS, formatHour } from "@/lib/format";
 import type { MapLayers } from "@/components/MapView";
@@ -100,6 +101,7 @@ export default function Dashboard() {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [booting, setBooting] = useState(true);
+  const [bootMsg, setBootMsg] = useState("Booting command center…");
   const [error, setError] = useState<string | null>(null);
   const [rightTab, setRightTab] = useState<"plan" | "accuracy">("plan");
   const [layers, setLayers] = useState<MapLayers>({
@@ -162,34 +164,58 @@ export default function Dashboard() {
 
   // Boot: load metadata, then run the default scenario.
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      try {
-        const [v, et, wo, hist, g, m] = await Promise.all([
-          getVenues(),
-          getEventTypes(),
-          getWeatherOptions(),
-          getHistoricalEvents(),
-          getGraph(),
-          getMetrics().catch(() => null),
-        ]);
-        setVenues(v);
-        setEventTypes(et);
-        setWeatherOptions(wo);
-        setHistorical(hist);
-        setGraph(g);
-        setMetrics(m);
-        await runSimulate(DEFAULT_SCENARIO);
-      } catch (e) {
-        setError(
-          (e instanceof Error ? e.message : String(e)) +
-            " — is the API running on " +
-            (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000") +
-            "?"
-        );
-      } finally {
-        setBooting(false);
+      // The API may be on a free tier that sleeps; retry through the cold start
+      // (~30-60s) showing a friendly "waking up" message instead of erroring.
+      const MAX_ATTEMPTS = 10;
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        try {
+          const [v, et, wo, hist, g, m] = await Promise.all([
+            getVenues(),
+            getEventTypes(),
+            getWeatherOptions(),
+            getHistoricalEvents(),
+            getGraph(),
+            getMetrics().catch(() => null),
+          ]);
+          if (cancelled) return;
+          setVenues(v);
+          setEventTypes(et);
+          setWeatherOptions(wo);
+          setHistorical(hist);
+          setGraph(g);
+          setMetrics(m);
+          const r = await simulate(DEFAULT_SCENARIO);
+          if (cancelled) return;
+          setResult(r);
+          setReplay(null);
+          setMode("simulate");
+          setRightTab("plan");
+          setTimeIndex(r.forecast.peakIndex);
+          setError(null);
+          setBooting(false);
+          return;
+        } catch {
+          if (cancelled) return;
+          if (attempt < MAX_ATTEMPTS - 1) {
+            setBootMsg(
+              "Waking up the forecasting engine… the first load after idle can take ~30–60s."
+            );
+            await new Promise((res) => setTimeout(res, 6000));
+          } else {
+            setError(
+              "Couldn't reach the API at " + API_BASE +
+                ". It may still be waking up — please refresh in a minute."
+            );
+            setBooting(false);
+          }
+        }
       }
     })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -232,11 +258,12 @@ export default function Dashboard() {
 
   if (booting) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-3">
+      <div className="flex h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <div className="text-2xl font-bold tracking-tight">
           Con<span className="text-accent font-semibold">flux</span>
         </div>
-        <div className="text-sm text-muted">Booting command center…</div>
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-edge border-t-accent" />
+        <div className="max-w-xs text-sm text-muted">{bootMsg}</div>
       </div>
     );
   }
