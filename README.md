@@ -1,214 +1,173 @@
-# 🚦 Conflux — Predictive Event Traffic Command Center
+# Conflux - Predictive Event Traffic Command Center
 
-**Flipkart GRiDLOCK Hackathon 2.0 · Round 2 (Prototype Phase)**
-**Theme 2 — Event-Driven Congestion (Planned & Unplanned)**
+**Flipkart GRiDLOCK Hackathon 2.0 - Round 2 (Prototype Phase)**
+**Theme 2 - Event-Driven Congestion (Planned & Unplanned)**
 
-> *How can historical and real-time data be used to forecast event-related traffic
-> impact and recommend optimal manpower, barricading, and diversion plans?*
+> *How can historical and real-time data be used to forecast event-related traffic impact and recommend optimal manpower, barricading, and diversion plans?*
 
-Conflux turns an event (cricket match, concert, political rally, marathon,
-protest, …) into a **space-time congestion forecast** for Bengaluru and an
-**actionable deployment plan** — *before* the event happens. It is built for a
-Bengaluru Traffic Police planning officer.
+Conflux transforms an event (cricket match, concert, political rally, marathon, protest, etc.) into a space-time congestion forecast for Bengaluru and an actionable deployment plan before the event occurs. It is designed specifically for a Bengaluru Traffic Police planning officer.
 
 ![Dashboard](docs/screenshots/01-dashboard.png)
 
 ---
 
-## The three pillars (mapped 1:1 to the problem statement)
+## The Three Pillars
 
-| Pillar | What it does | Kills which pain point |
-|--------|--------------|------------------------|
-| **1. FORECAST** | An ML model predicts **per-junction congestion over time** (arrival → peak → dispersal), expected delay, impact radius, and the most-affected corridors. | *"Event impact is not quantified in advance."* |
-| **2. RECOMMEND** | Converts the forecast into a plan: **manpower allocation** (optimised against a staffing budget), **barricade points**, and **diversion routes** drawn on the map. | *"Resource deployment is experience-driven."* |
-| **3. LEARN** | A **predicted-vs-actual** replay for past events with accuracy metrics. | *"No post-event learning system."* |
+| Pillar | Function | Pain Point Addressed |
+|--------|----------|----------------------|
+| **1. FORECAST** | An ML model predicts per-junction congestion over time (arrival to peak to dispersal), expected delay, impact radius, and the most-affected corridors. | "Event impact is not quantified in advance." |
+| **2. RECOMMEND** | Converts the forecast into a plan: manpower allocation (optimized against a staffing budget), barricade points, and diversion routes drawn on the map. | "Resource deployment is experience-driven." |
+| **3. LEARN** | A predicted-vs-actual replay for past events with accuracy metrics. | "No post-event learning system." |
 
-Plus a **live scenario simulator** — drag attendance / start-time / weather and
-watch the forecast *and* the deployment plan update instantly.
+In addition, a live scenario simulator allows users to adjust attendance, start times, and weather conditions, updating the forecast and deployment plan instantly.
 
 ---
 
-## How the ML actually works (honest version)
+## Machine Learning Implementation
 
-Because real CCTV/ANPR feeds aren't available in a prototype, Conflux is trained
-on a **grounded synthetic dataset** — but the model still does real work:
+Because real CCTV and ANPR feeds are not available during the prototype phase, Conflux is trained on a grounded synthetic dataset. However, the model is built to handle real-world complexity:
 
-1. **Real spatial backbone** — 38 real Bengaluru junctions (Silk Board, Hebbal,
-   KR Puram, MG Road, Cubbon Park, …) wired into a road graph with lane counts,
-   capacities, and **betweenness centrality** (`api/app/data/graph.py`), plus 8
-   real venues with real capacities (`venues.py`).
+1. **Spatial Backbone**: 38 real Bengaluru junctions (Silk Board, Hebbal, KR Puram, MG Road, Cubbon Park, etc.) are integrated into a road network graph featuring lane counts, capacities, and betweenness centrality, alongside 8 real venues with accurate capacities.
 
-2. **A physical generative model** (`features.py::ground_truth`) produces the
-   "reality": baseline traffic by time-of-day/day-of-week + an event surcharge
-   driven by attendance, event type, **distance-decay** from the venue, network
-   funnel effects, an **arrival/dispersal temporal curve**, and weather.
+2. **Generative Model**: A physical model produces baseline traffic depending on the time of day and day of the week. An event surcharge is then applied based on attendance, event type, distance-decay from the venue, network funnel effects, an arrival/dispersal temporal curve, and weather conditions.
 
-3. **The model only sees raw, knowable-in-advance features** (attendance, type,
-   distance, clock time, weather, …) — *not* the physics internals — so it has to
-   **learn** the mapping. Two `HistGradientBoostingRegressor` models (congestion +
-   delay) are trained and **evaluated on held-out, unseen events** (split by
-   event, not by row — no leakage).
+3. **Feature Mapping**: The model only processes raw, knowable-in-advance features (attendance, type, distance, time, weather). Two HistGradientBoostingRegressor models (for congestion and delay) are trained and evaluated on held-out, unseen events to prevent data leakage.
 
-### Model performance (held-out set: 79 unseen events, ~103k samples)
+### Model Performance
+*(Evaluated on a held-out set of 79 unseen events, approx. 103k samples)*
 
-| Target | R² | MAE | Skill vs. mean-baseline |
-|--------|----|-----|--------------------------|
-| **Congestion index** (0–100) | **0.94** | **3.05 pts** | **+77.5%** |
-| **Avg delay** (min) | **0.82** | **0.49 min** | +53.7% |
+| Target | R-Squared | Mean Absolute Error (MAE) | Skill vs. Mean-Baseline |
+|--------|-----------|---------------------------|-------------------------|
+| **Congestion Index** (0-100) | **0.94** | **3.05 pts** | **+77.5%** |
+| **Avg Delay** (min) | **0.82** | **0.49 min** | +53.7% |
 
-**Post-event replay accuracy** (predicted vs. observed peak, % of junctions within 10 pts):
+**Post-Event Replay Accuracy** (Predicted vs. observed peak, % of junctions within 10 points):
 
 | Event | MAE | Within 10 pts |
 |-------|-----|---------------|
-| RCB vs CSK — IPL Night Match | 5.7 | 87% |
-| Arijit Singh @ Palace Grounds | 4.2 | 90% |
-| Farmers' Rally @ Freedom Park | 3.0 | 100% |
-| Bengaluru FC Derby @ Kanteerava | 2.9 | 100% |
+| RCB vs CSK - IPL Night Match | 5.7 | 87% |
+| Arijit Singh at Palace Grounds | 4.2 | 90% |
+| Farmers' Rally at Freedom Park | 3.0 | 100% |
+| Bengaluru FC Derby at Kanteerava | 2.9 | 100% |
 | TCS World 10K Marathon | 6.9 | 74% |
-| Mass Protest @ Vidhana Soudha | 6.3 | 74% |
+| Mass Protest at Vidhana Soudha | 6.3 | 74% |
 
-*(Marathons/protests are deliberately harder — route-based, not point-source — and
-the model honestly shows higher uncertainty there.)*
+*(Note: Marathons and protests are inherently more challenging to predict as they are route-based rather than point-source. The model correctly reflects higher uncertainty in these scenarios.)*
 
 ---
 
-## The recommendation engine (`api/app/ml/optimize.py`)
+## Recommendation Engine
 
-- **Manpower** — greedy **marginal-utility allocation**: each officer is sent to the
-  junction with the highest remaining benefit (priority = event-surge × congestion ×
-  centrality, with diminishing returns). Reports expected delay reduction per junction.
-- **Barricades** — inflow-control points on the worst corridors *near the venue*,
-  scored by impact × proximity.
-- **Diversions** — **congestion-aware re-routing** (`networkx`): for cross-city
-  through-traffic, compares the normal shortest path against one that penalises
-  impacted edges, and surfaces reroutes that keep the event corridor clear.
+- **Manpower**: Utilizes greedy marginal-utility allocation. Officers are dispatched to the junction with the highest remaining benefit (priority calculated by event-surge * congestion * centrality, incorporating diminishing returns). Expected delay reductions per junction are reported.
+- **Barricades**: Identifies inflow-control points on the most heavily impacted corridors near the venue, scored by a combination of impact and proximity.
+- **Diversions**: Employs congestion-aware re-routing. It compares the normal shortest path against a path that penalizes impacted edges, surfacing optimal reroutes to keep event corridors clear.
 
 ---
 
 ## Architecture
 
-```
-┌────────────────────────┐        REST/JSON        ┌──────────────────────────────┐
-│  web/  (Next.js 16)     │  ───────────────────▶   │  api/  (FastAPI · Python)     │
-│  • Command-center UI    │                         │  • /simulate  (forecast+plan) │
-│  • Leaflet map (OSM)    │   ◀───────────────────  │  • /events/{id}/replay        │
-│  • Recharts timelines   │                         │  • HistGradientBoosting model │
-│  • Scenario simulator   │                         │  • networkx routing engine    │
-└────────────────────────┘                         └──────────────────────────────┘
-        deploy: Vercel                                   deploy: container (Docker)
+```text
+[ web/ (Next.js 16) ]         REST/JSON        [ api/ (FastAPI & Python) ]
+- Command-center UI          --------->        - /simulate (forecast & plan)
+- Leaflet map (OSM)                            - /events/{id}/replay
+- Recharts timelines         <---------        - HistGradientBoosting model
+- Scenario simulator                           - NetworkX routing engine
+(Deploy: Vercel)                               (Deploy: Docker Container)
 ```
 
-**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind v4 · React-Leaflet · Recharts
-· FastAPI · scikit-learn · NetworkX · pandas/numpy.
+**Tech Stack**: Next.js 16 (App Router), TypeScript, Tailwind v4, React-Leaflet, Recharts, FastAPI, scikit-learn, NetworkX, pandas, numpy.
 
 ---
 
-## ▶️ Run it
+## Local Setup
 
-### Option A — Docker (one command, recommended for reviewers)
+### Option A - Docker (Recommended)
 
 ```bash
 docker compose up --build
 ```
 
-- Web → **http://localhost:3000**
-- API → **http://localhost:8000** (interactive docs at `/docs`)
+- Web Dashboard: `http://localhost:3000`
+- API Backend: `http://localhost:8000` (Interactive documentation available at `/docs`)
 
-### Option B — Manual (two terminals)
+### Option B - Manual Setup
 
-**Terminal 1 — API**
+**Terminal 1 (API Server)**
 ```bash
 cd api
 python -m venv .venv
-# Windows:  .venv\Scripts\activate     macOS/Linux:  source .venv/bin/activate
+# Windows: .venv\Scripts\activate | macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-python -m app.ml.train          # optional — trained model is already committed
 uvicorn app.main:app --reload --port 8000
 ```
 
-**Terminal 2 — Web**
+**Terminal 2 (Web Client)**
 ```bash
 cd web
 npm install
-npm run dev                      # http://localhost:3000
+npm run dev
 ```
 
-> The web app defaults to `http://127.0.0.1:8000` for the API. Override with
-> `NEXT_PUBLIC_API_URL` (see `web/.env.example`).
+*Note: The web client defaults to `http://127.0.0.1:8000` for the API. You can override this using the `NEXT_PUBLIC_API_URL` environment variable.*
 
 ---
 
-## API reference
+## API Reference
 
 | Method | Endpoint | Purpose |
 |--------|----------|---------|
-| `GET`  | `/api/venues` | Supported venues |
-| `GET`  | `/api/event-types` | Supported event types |
-| `GET`  | `/api/graph` | Junction/road network |
-| `GET`  | `/api/metrics` | Model metrics + predicted-vs-actual sample |
-| `POST` | `/api/simulate` | **Forecast + deployment plan** for a scenario |
-| `GET`  | `/api/events` | Curated historical events |
-| `GET`  | `/api/events/{id}/replay` | Predicted-vs-actual (post-event learning) |
-
-Example:
-```bash
-curl -X POST http://localhost:8000/api/simulate -H "Content-Type: application/json" \
-  -d '{"venueId":"chinnaswamy","eventType":"cricket","attendance":36000,
-       "startHour":19.5,"dow":5,"rain":0,"durationMin":210,"manpowerBudget":60}'
-```
+| `GET` | `/api/venues` | List supported venues |
+| `GET` | `/api/event-types` | List supported event types |
+| `GET` | `/api/graph` | Fetch junction and road network graph |
+| `GET` | `/api/metrics` | Retrieve model metrics and predicted-vs-actual sample data |
+| `POST` | `/api/simulate` | Generate forecast and deployment plan for a scenario |
+| `GET` | `/api/events` | List curated historical events |
+| `GET` | `/api/events/{id}/replay` | Retrieve predicted-vs-actual post-event analysis |
 
 ---
 
-## Project structure
+## Project Structure
 
-```
+```text
 Conflux/
-├── api/                      # Python ML + FastAPI backend
-│   ├── app/
-│   │   ├── data/             # venues + Bengaluru road graph
-│   │   ├── ml/               # features, generate, train, forecast, optimize
-│   │   ├── artifacts/        # trained models + metrics (committed)
-│   │   ├── schemas.py        # API request models
-│   │   └── main.py           # FastAPI app
-│   ├── requirements.txt
-│   └── Dockerfile
-├── web/                      # Next.js dashboard
-│   └── src/
-│       ├── components/       # Dashboard, MapView, ScenarioPanel, ...
-│       ├── lib/              # typed API client + formatting
-│       └── app/
-├── docs/screenshots/
-├── docker-compose.yml
-└── README.md
+|-- api/                      # Python ML & FastAPI backend
+|   |-- app/
+|   |   |-- data/             # Venue information and Bengaluru road graph
+|   |   |-- ml/               # Feature engineering, generative model, inference, and optimization
+|   |   |-- artifacts/        # Trained ML models and metrics
+|   |   |-- schemas.py        # API request schemas
+|   |   |-- main.py           # FastAPI application entrypoint
+|   |-- requirements.txt
+|   |-- Dockerfile
+|-- web/                      # Next.js frontend
+|   |-- src/
+|   |   |-- components/       # UI components (Dashboard, MapView, ScenarioPanel, etc.)
+|   |   |-- lib/              # API client and formatting utilities
+|   |   |-- app/              # Next.js App Router pages
+|-- docs/                     # Documentation and screenshots
+|-- docker-compose.yml
+|-- README.md
 ```
 
 ---
 
-## Deploying
+## Deployment
 
-- **Web → Vercel:** set **Root Directory = `web`**, add env var
-  `NEXT_PUBLIC_API_URL` = your deployed API URL. Next.js is auto-detected.
-- **API → any container host** (Render / Railway / Fly / Cloud Run): build the
-  `api/` image; it serves on `:8000`. Model artifacts are baked into the image.
+- **Web (Vercel)**: Set the root directory to `web`, and configure the `NEXT_PUBLIC_API_URL` environment variable to point to your deployed API. Next.js settings are automatically detected.
+- **API (Containerized)**: Build the `api/` image and deploy to any container host (e.g., Render, Railway, Fly, Cloud Run). The service listens on port 8000, and model artifacts are pre-bundled within the image.
 
 ---
 
-## How this scores against the judging criteria
+## Evaluation Criteria
 
-- **Robustness** — real ML with leakage-free, held-out evaluation (R² 0.94) and an
-  honest post-event accuracy loop.
-- **Innovation** — isolates *event-attributable* impact (forecast minus baseline),
-  marginal-utility manpower optimisation, and congestion-aware diversion routing.
-- **Prototype clarity** — a working, demoable command center; one-command run.
-- **Scalability** — graph + tabular model generalises to any venue × event type;
-  the same pipeline accepts real ANPR/CCTV/loop-detector feeds in place of the
-  synthetic generator.
-- **Real-world viability** — outputs exactly what a planning officer needs:
-  *how many officers where, what to barricade, what to divert* — ahead of time.
+- **Robustness**: Utilizes real machine learning with leakage-free, held-out evaluation (R-Squared 0.94) alongside a transparent post-event accuracy loop.
+- **Innovation**: Isolates event-attributable impact, applies marginal-utility algorithms for manpower optimization, and implements congestion-aware diversion routing.
+- **Prototype Clarity**: A fully functional, demo-ready command center that can be spun up with a single command.
+- **Scalability**: The graph and tabular model design generalizes easily to any venue and event type. The architecture seamlessly accepts real ANPR/CCTV feeds in place of the synthetic data generator.
+- **Real-World Viability**: Delivers exactly what a planning officer needs - precise numbers on how many officers to deploy, where to place barricades, and which routes to divert traffic to.
 
-## Limitations & next steps
+## Future Scope
 
-- Synthetic ground truth (prototype constraint) — designed to swap in real feeds.
-- Venue-centric impact model; route-based events (marathons) are next.
-- Add real-time feed ingestion, historical event calendar import, and a
-  shift-roster export for field deployment.
+- **Real Data Integration**: Transition from synthetic ground truth to real-time feed ingestion.
+- **Route-Based Event Modeling**: Enhance prediction models for moving events such as marathons and processions.
+- **Workflow Tools**: Add historical event calendar imports and shift-roster exports for field deployment.

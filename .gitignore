@@ -25,6 +25,15 @@ api/.env
 *.zip
 dist/
 
+# --- Local-only submission prep materials ---
+docs/Conflux-Pitch-Deck.pdf
+docs/Conflux-Video-Script.pdf
+docs/DEPLOY.md
+docs/SUBMISSION.md
+docs/VIDEO_SCRIPT.md
+docs/deck.html
+docs/video-script.html
+
 # --- OS ---
 .DS_Store
 Thumbs.db
