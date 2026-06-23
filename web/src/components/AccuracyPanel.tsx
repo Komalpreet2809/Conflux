@@ -34,7 +34,7 @@ export default function AccuracyPanel({ metrics, replay, theme = "dark" }: Props
   const scatterFill = isDark ? (isReplay ? "#f43f5e" : "#b5b0a5") : (isReplay ? "#f43f5e" : "#6b675e");
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col p-4">
       <div className="mb-2 flex items-center gap-2">
         {isReplay ? (
           <Target size={15} className="text-foreground" />

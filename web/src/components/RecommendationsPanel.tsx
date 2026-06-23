@@ -96,7 +96,7 @@ export default function RecommendationsPanel({ plan, layers, onToggleLayer }: Pr
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 transition-colors duration-300">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 transition-colors duration-300 px-4 pt-4">
         <div className="flex flex-wrap gap-1">
           {tabs.map((t) => (
             <button
@@ -136,7 +136,7 @@ export default function RecommendationsPanel({ plan, layers, onToggleLayer }: Pr
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto scroll-thin pr-1">
+      <div className="flex-1 overflow-y-auto scroll-thin pl-4 pr-3 pb-4">
         {tab === "manpower" && (
           <div className="flex flex-col gap-2">
             {plan.manpower.officers.length === 0 && (

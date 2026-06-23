@@ -388,7 +388,7 @@ export default function Dashboard() {
         style={{ "--lw": `${leftW}px`, "--rw": `${rightW}px` } as CSSProperties}
       >
         {/* Left: scenario */}
-        <aside className="panel p-4 lg:min-h-0 lg:overflow-hidden">
+        <aside className="panel p-0 lg:min-h-0 lg:overflow-hidden">
           <ScenarioPanel
             scenario={scenario}
             venues={venues}
@@ -516,7 +516,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="panel overflow-hidden p-4 min-h-[460px] lg:min-h-0 lg:flex-1">
+          <div className="panel overflow-hidden p-0 min-h-[460px] lg:min-h-0 lg:flex-1">
             {rightTab === "plan" && plan ? (
               <RecommendationsPanel
                 plan={plan}

@@ -52,7 +52,7 @@ export default function ScenarioPanel({
   const ratio = venue ? Math.round((scenario.attendance / venue.capacity) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-3 lg:h-full lg:overflow-y-auto scroll-thin pr-1">
+    <div className="flex flex-col gap-3 p-4 lg:h-full lg:overflow-y-auto scroll-thin pr-3">
       <div>
         <SectionTitle right={<Zap size={14} className="text-foreground" />}>
           Plan an Event
