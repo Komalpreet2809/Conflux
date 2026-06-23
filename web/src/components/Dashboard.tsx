@@ -409,7 +409,7 @@ export default function Dashboard() {
         <main className="flex flex-col gap-4 lg:min-h-0 lg:min-w-0 lg:overflow-y-auto lg:pr-1.5 scroll-thin">
           {forecast && plan && <KpiBar kpis={forecast.kpis} plan={plan} />}
 
-          <div className="panel relative overflow-hidden h-[55vh] min-h-[360px] lg:h-auto lg:min-h-[340px] lg:flex-1">
+          <div className="panel relative overflow-hidden h-[55vh] min-h-[360px] lg:h-auto lg:min-h-[300px] lg:flex-1">
             <MapView
               forecast={forecast}
               graph={graph}
