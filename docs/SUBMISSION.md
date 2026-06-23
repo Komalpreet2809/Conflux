@@ -51,6 +51,14 @@ The exact same pipeline accepts **real ANPR / CCTV / loop-detector feeds** in pl
 ## Instructions to Run
 *(Numbered steps for reviewers.)*
 
+**Fastest — no setup (recommended):**
+
+1. Open the live demo: **https://conflux-chi-orpin.vercel.app/**
+2. It loads with a default forecast. *(The API runs on a free tier that sleeps when idle — if the first load is blank, wait ~40–50s and refresh once while it wakes.)*
+3. Try it: pick a venue + event on the left (or a **Replay Real Event**), press **Run Forecast & Plan**, scrub the timeline with ▶, and switch the right panel between **Deployment Plan** and **Accuracy**.
+
+---
+
 **Option A — Docker (one command):**
 
 1. Install Docker Desktop and ensure it's running.

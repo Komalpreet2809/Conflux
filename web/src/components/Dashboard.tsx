@@ -242,7 +242,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden transition-colors duration-300">
+    <div className="flex min-h-screen flex-col lg:h-screen lg:overflow-hidden transition-colors duration-300">
       {/* Header */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-edge bg-panel px-5 shadow-xs backdrop-blur-md transition-colors duration-300">
         <div className="flex items-center gap-2.5">
@@ -266,12 +266,14 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {metrics && (
-            <Badge color="#71717a">
-              <Radio size={11} className="animate-pulse" /> Model R² {metrics.targets.congestion.r2.toFixed(2)}
-            </Badge>
-          )}
-          <Badge color="#71717a">GRiDLOCK Hackathon 2.0</Badge>
+          <div className="hidden md:flex items-center gap-3">
+            {metrics && (
+              <Badge color="#71717a">
+                <Radio size={11} className="animate-pulse" /> Model R² {metrics.targets.congestion.r2.toFixed(2)}
+              </Badge>
+            )}
+            <Badge color="#71717a">GRiDLOCK Hackathon 2.0</Badge>
+          </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted font-bold transition-colors duration-300">
             <span className="live-dot inline-block h-2 w-2 rounded-full bg-accent" />
             LIVE
@@ -293,9 +295,9 @@ export default function Dashboard() {
       )}
 
       {/* Body */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[290px_1fr_350px] xl:grid-cols-[330px_1fr_390px]">
+      <div className="grid grid-cols-1 gap-4 p-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[290px_1fr_350px] xl:grid-cols-[330px_1fr_390px]">
         {/* Left: scenario */}
-        <aside className="panel min-h-0 overflow-hidden p-4">
+        <aside className="panel p-4 lg:min-h-0 lg:overflow-hidden">
           <ScenarioPanel
             scenario={scenario}
             venues={venues}
@@ -311,10 +313,10 @@ export default function Dashboard() {
         </aside>
 
         {/* Center: KPIs + map + slider + chart */}
-        <main className="flex min-h-0 min-w-0 flex-col gap-4">
+        <main className="flex flex-col gap-4 lg:min-h-0 lg:min-w-0">
           {forecast && plan && <KpiBar kpis={forecast.kpis} plan={plan} />}
 
-          <div className="panel relative min-h-0 flex-1 overflow-hidden">
+          <div className="panel relative overflow-hidden h-[55vh] min-h-[360px] lg:h-auto lg:min-h-0 lg:flex-1">
             <MapView
               forecast={forecast}
               graph={graph}
@@ -373,7 +375,7 @@ export default function Dashboard() {
         </main>
 
         {/* Right: event summary + plan/accuracy */}
-        <aside className="flex min-h-0 flex-col gap-4">
+        <aside className="flex flex-col gap-4 lg:min-h-0">
           {forecast && (
             <div className="panel p-4">
               <div className="flex items-center justify-between">
@@ -419,7 +421,7 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="panel min-h-0 flex-1 overflow-hidden p-4">
+          <div className="panel overflow-hidden p-4 min-h-[460px] lg:min-h-0 lg:flex-1">
             {rightTab === "plan" && plan ? (
               <RecommendationsPanel
                 plan={plan}
