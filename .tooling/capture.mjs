@@ -5,11 +5,12 @@ const OUT = "d:/PROJECTS/Gridlockr2/docs/screenshots";
 mkdirSync(OUT, { recursive: true });
 
 const errors = [];
-const browser = await chromium.launch();
+const browser = await chromium.launch({ args: ["--ignore-certificate-errors"] });
 const page = await browser.newPage({
   viewport: { width: 1680, height: 950 },
   deviceScaleFactor: 2,
   colorScheme: "dark",
+  ignoreHTTPSErrors: true,
 });
 
 page.on("console", (m) => {
