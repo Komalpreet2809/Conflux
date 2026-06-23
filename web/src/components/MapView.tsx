@@ -68,8 +68,24 @@ const BLR_CENTER: [number, number] = [12.9716, 77.5946];
 function MapResizeObserver() {
   const map = useMap();
   useEffect(() => {
-    const c = map.getContainer();
-    const ro = new ResizeObserver(() => map.invalidateSize());
+    if (!map) return;
+    let c: HTMLElement | null = null;
+    try {
+      c = map.getContainer();
+    } catch (e) {
+      // Container not found or map destroyed
+    }
+    if (!c) return;
+
+    const ro = new ResizeObserver(() => {
+      try {
+        if (map) {
+          map.invalidateSize();
+        }
+      } catch (e) {
+        // Map might have been unmounted
+      }
+    });
     ro.observe(c);
     return () => ro.disconnect();
   }, [map]);
@@ -279,6 +295,7 @@ export default function MapView({
 
   return (
     <MapContainer
+      key={theme}
       center={BLR_CENTER}
       zoom={12}
       className="h-full w-full"
