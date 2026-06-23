@@ -29,7 +29,8 @@ export default function TimeSlider({
 
   return (
     <div className="panel px-4 py-3 shadow-xs">
-      <div className="flex items-center gap-3">
+      {/* Controls + readout — wrap as blocks so nothing clips on small screens */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <button
           onClick={onPlayToggle}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-md transition hover:opacity-90 cursor-pointer"
@@ -46,47 +47,45 @@ export default function TimeSlider({
           <SkipForward size={12} /> Peak
         </button>
 
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-sans text-[15px] font-extrabold tabular-nums text-foreground">
-                {bucket.label}
-              </span>
-              <span className="text-[12px] font-bold text-muted">
-                {formatHour(bucket.clockHour)}
-              </span>
-              <span className="rounded-full border border-edge bg-panel-2 px-2.5 py-0.5 text-[10.5px] font-bold text-foreground">
-                {phaseLabel(bucket.phase)}
-              </span>
-            </div>
-            <span className="text-[11px] text-muted font-bold">
-              avg{" "}
-              <b className="text-foreground font-extrabold">{bucket.avgCongestion.toFixed(0)}</b> ·
-              peak{" "}
-              <b className="text-foreground font-extrabold">{bucket.maxCongestion.toFixed(0)}</b> ·{" "}
-              <b className="text-foreground font-extrabold">{bucket.junctionsAffected}</b> jns hit
-            </span>
-          </div>
-          <div className="relative">
-            <input
-              type="range"
-              min={0}
-              max={timeline.length - 1}
-              step={1}
-              value={timeIndex}
-              onChange={(e) => onScrub(Number(e.target.value))}
-              className="w-full cursor-pointer"
-            />
-            {/* peak marker */}
-            <div
-              className="pointer-events-none absolute -top-0.5 h-3 w-0.5 bg-foreground"
-              style={{
-                left: `${(peakIndex / (timeline.length - 1)) * 100}%`,
-              }}
-              title="Peak impact"
-            />
-          </div>
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="font-sans text-[15px] font-extrabold tabular-nums text-foreground">
+            {bucket.label}
+          </span>
+          <span className="text-[12px] font-bold text-muted">
+            {formatHour(bucket.clockHour)}
+          </span>
+          <span className="whitespace-nowrap rounded-full border border-edge bg-panel-2 px-2.5 py-0.5 text-[10.5px] font-bold text-foreground">
+            {phaseLabel(bucket.phase)}
+          </span>
         </div>
+
+        <span className="ml-auto whitespace-nowrap text-[11px] font-bold text-muted">
+          avg{" "}
+          <b className="text-foreground font-extrabold">{bucket.avgCongestion.toFixed(0)}</b> · peak{" "}
+          <b className="text-foreground font-extrabold">{bucket.maxCongestion.toFixed(0)}</b> ·{" "}
+          <b className="text-foreground font-extrabold">{bucket.junctionsAffected}</b> jns
+        </span>
+      </div>
+
+      {/* Slider — always full width */}
+      <div className="relative mt-3">
+        <input
+          type="range"
+          min={0}
+          max={timeline.length - 1}
+          step={1}
+          value={timeIndex}
+          onChange={(e) => onScrub(Number(e.target.value))}
+          className="w-full cursor-pointer"
+        />
+        {/* peak marker */}
+        <div
+          className="pointer-events-none absolute -top-0.5 h-3 w-0.5 bg-foreground"
+          style={{
+            left: `${(peakIndex / (timeline.length - 1)) * 100}%`,
+          }}
+          title="Peak impact"
+        />
       </div>
     </div>
   );
