@@ -110,7 +110,7 @@ export default function Dashboard() {
   const [booting, setBooting] = useState(true);
   const [bootMsg, setBootMsg] = useState("Booting command center…");
   const [leftW, setLeftW] = useState(330);
-  const [rightW, setRightW] = useState(390);
+  const [rightW, setRightW] = useState(430);
   const [error, setError] = useState<string | null>(null);
   const [rightTab, setRightTab] = useState<"plan" | "accuracy">("plan");
   const [layers, setLayers] = useState<MapLayers>({
@@ -259,16 +259,16 @@ export default function Dashboard() {
 
   // --- Resizable columns (desktop only) ---
   useEffect(() => {
-    const l = Number(localStorage.getItem("conflux:leftW"));
-    const r = Number(localStorage.getItem("conflux:rightW"));
+    const l = Number(localStorage.getItem("conflux:leftW.v2"));
+    const r = Number(localStorage.getItem("conflux:rightW.v2"));
     if (l >= 240 && l <= 520) setLeftW(l);
     if (r >= 300 && r <= 560) setRightW(r);
   }, []);
   useEffect(() => {
-    localStorage.setItem("conflux:leftW", String(leftW));
+    localStorage.setItem("conflux:leftW.v2", String(leftW));
   }, [leftW]);
   useEffect(() => {
-    localStorage.setItem("conflux:rightW", String(rightW));
+    localStorage.setItem("conflux:rightW.v2", String(rightW));
   }, [rightW]);
 
   const startColDrag = (which: "left" | "right") => (e: ReactPointerEvent) => {
@@ -299,7 +299,7 @@ export default function Dashboard() {
   const ColHandle = ({ side }: { side: "left" | "right" }) => (
     <div
       onPointerDown={startColDrag(side)}
-      onDoubleClick={() => (side === "left" ? setLeftW(330) : setRightW(390))}
+      onDoubleClick={() => (side === "left" ? setLeftW(330) : setRightW(430))}
       role="separator"
       aria-orientation="vertical"
       title="Drag to resize · double-click to reset"
