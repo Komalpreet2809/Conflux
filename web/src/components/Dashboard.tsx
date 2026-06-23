@@ -421,18 +421,18 @@ export default function Dashboard() {
               theme={theme}
             />
             {/* Legend overlay */}
-            <div className="pointer-events-none absolute bottom-4 left-4 z-[500] rounded-xl border border-edge bg-panel/95 px-3 py-2 shadow-md backdrop-blur transition-colors duration-300">
+            <div className="pointer-events-none absolute bottom-3 left-3 right-3 z-[500] w-fit max-w-[calc(100%-1.5rem)] rounded-xl border border-edge bg-panel/95 px-3 py-2 shadow-md backdrop-blur transition-colors duration-300">
               <div className="mb-1 flex items-center gap-1 text-[10px] uppercase font-bold tracking-wide text-muted">
                 <Layers size={10} /> Congestion
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
                 {LEGEND.map((x) => (
-                  <div key={x.l} className="flex items-center gap-1.5">
+                  <div key={x.l} className="flex shrink-0 items-center gap-1.5">
                     <span
-                      className="inline-block h-2.5 w-2.5 rounded-full border border-black/5 dark:border-white/10"
+                      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-black/5 dark:border-white/10"
                       style={{ background: x.c }}
                     />
-                    <span className="text-[10px] text-muted font-semibold">{x.l}</span>
+                    <span className="whitespace-nowrap text-[10px] text-muted font-semibold">{x.l}</span>
                   </div>
                 ))}
               </div>
