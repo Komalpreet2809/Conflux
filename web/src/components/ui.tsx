@@ -19,9 +19,9 @@ export function Stat({
 }) {
   return (
     <div className="panel-2 min-w-0 px-2.5 py-2 sm:px-3 sm:py-2.5">
-      <div className="flex items-start gap-1 text-[10px] sm:text-[11px] uppercase tracking-wider text-muted">
+      <div className="flex items-start gap-1 text-[8px] sm:text-[8.5px] md:text-[9px] lg:text-[8.5px] xl:text-[9.5px] 2xl:text-[10px] uppercase tracking-wider text-muted min-w-0 w-full">
         {icon && <span className="shrink-0 mt-0.5 opacity-70">{icon}</span>}
-        <span className="break-words text-wrap font-semibold leading-tight select-none" title={label}>
+        <span className="break-words text-wrap min-w-0 font-semibold leading-tight select-none" title={label}>
           {label}
         </span>
       </div>
