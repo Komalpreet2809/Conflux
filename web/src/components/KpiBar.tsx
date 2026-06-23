@@ -28,7 +28,7 @@ export default function KpiBar({ kpis, plan }: { kpis: Kpis; plan: Plan }) {
       <Stat
         label="Worst junction"
         value={
-          <span className="text-[15px] font-semibold leading-tight">
+          <span className="text-[12px] font-semibold leading-tight">
             {kpis.worstJunction ?? "—"}
           </span>
         }
