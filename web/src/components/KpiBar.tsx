@@ -16,7 +16,7 @@ import { Stat } from "@/components/ui";
 export default function KpiBar({ kpis, plan }: { kpis: Kpis; plan: Plan }) {
   const peakColor = congestionColor(kpis.peakCongestion);
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6">
       <Stat
         label="Peak congestion"
         value={
@@ -46,7 +46,7 @@ export default function KpiBar({ kpis, plan }: { kpis: Kpis; plan: Plan }) {
         value={
           <>
             {kpis.impactRadiusKm.toFixed(1)}
-            <span className="text-base text-muted"> km</span>
+            <span className="text-xs text-muted font-medium"> km</span>
           </>
         }
         sub="from venue"
@@ -63,9 +63,9 @@ export default function KpiBar({ kpis, plan }: { kpis: Kpis; plan: Plan }) {
         value={
           <span className="text-foreground">
             {plan.summary.barricadePoints}
-            <span className="text-base text-muted"> bar</span> ·{" "}
+            <span className="text-xs text-muted font-medium"> bar</span> ·{" "}
             {plan.summary.diversionRoutes}
-            <span className="text-base text-muted"> div</span>
+            <span className="text-xs text-muted font-medium"> div</span>
           </span>
         }
         sub="barricades · diversions"

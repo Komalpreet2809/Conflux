@@ -18,15 +18,21 @@ export function Stat({
   icon?: ReactNode;
 }) {
   return (
-    <div className="panel-2 min-w-0 px-3 py-2.5">
-      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-muted">
-        {icon && <span className="shrink-0 opacity-70">{icon}</span>}
-        <span className="truncate">{label}</span>
+    <div className="panel-2 min-w-0 px-2.5 py-2 sm:px-3 sm:py-2.5">
+      <div className="flex items-start gap-1 text-[10px] sm:text-[11px] uppercase tracking-wider text-muted">
+        {icon && <span className="shrink-0 mt-0.5 opacity-70">{icon}</span>}
+        <span className="break-words text-wrap font-semibold leading-tight select-none" title={label}>
+          {label}
+        </span>
       </div>
-      <div className={`mt-1 break-words text-[26px] font-bold leading-tight tracking-tight ${accent}`}>
+      <div className={`mt-1 break-words text-[22px] sm:text-[24px] lg:text-[22px] xl:text-[24px] 2xl:text-[26px] font-bold leading-tight tracking-tight ${accent}`}>
         {value}
       </div>
-      {sub ? <div className="mt-1 break-words text-[11px] leading-snug text-muted">{sub}</div> : null}
+      {sub ? (
+        <div className="mt-1 break-words text-[10.5px] sm:text-[11px] leading-snug text-muted">
+          {sub}
+        </div>
+      ) : null}
     </div>
   );
 }
